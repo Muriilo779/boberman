@@ -1,10 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Scripts.Player;
 using UnityEngine;
 
 public class PlayerAttackingState : PlayerState
 {
-    public PlayerAttackingState(PlayerManager player, PlayerMovement playerMovement, PlayerInputSystem playerInput, StateMachine<PlayerState> playerStateMachine, Animator playerAnimator) : base(player, playerMovement, playerInput, playerStateMachine, playerAnimator)
+    public PlayerAttackingState(PlayerManager player, PlayerSO playerSO, PlayerMovement playerMovement, PlayerInputSystem playerInput,
+        StateMachine<PlayerState> playerStateMachine, Animator playerAnimator) 
+        : base(player, playerSO, playerMovement, playerInput, playerStateMachine, playerAnimator)
     {
     }
 

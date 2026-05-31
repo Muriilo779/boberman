@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Scripts.Player;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -8,6 +9,7 @@ using UnityEngine.Serialization;
 
 public abstract class PlayerManager : NetworkBehaviour, IDamageable
 {
+    [SerializeField] public PlayerSO playerData;
     public SpawnManager SpawnManagerRef { get; protected set; }
     public Animator PlayerAnimator { get; protected set; }
     public AnimationClip DyingAnimation { get; protected set; }
@@ -31,18 +33,22 @@ public abstract class PlayerManager : NetworkBehaviour, IDamageable
 
     protected virtual void Awake()
     {
-        MaxHealth = 1;
+        MaxHealth = playerData.maxHealth;
         CurrentHealth = MaxHealth;
         SpawnManagerRef = FindFirstObjectByType<SpawnManager>();
         PlayerAnimator = GetComponent<Animator>();
         PlayerMovement = GetComponent<PlayerMovement>();
         PlayerInput = GetComponent<PlayerInputSystem>();
+        PlayerBomb = GetComponent<PlayerBomb>();
         StateMachine = new StateMachine<PlayerState>();
 
-        IdleState = new PlayerIdleState(this, PlayerMovement, PlayerInput, StateMachine, PlayerAnimator);
-        WalkingState = new PlayerWalkingState(this, PlayerMovement, PlayerInput, StateMachine, PlayerAnimator);
-        AttackingState = new PlayerAttackingState(this, PlayerMovement, PlayerInput, StateMachine, PlayerAnimator);
-        DieState = new PlayerDieState(this, PlayerMovement, PlayerInput, StateMachine, PlayerAnimator);
+        PlayerMovement.maxMoveSpeed = playerData.maxMoveSpeed;
+        PlayerMovement.moveSpeed = playerData.moveSpeed;
+        
+        IdleState = new PlayerIdleState(this, playerData, PlayerMovement, PlayerInput, StateMachine, PlayerAnimator);
+        WalkingState = new PlayerWalkingState(this, playerData, PlayerMovement, PlayerInput, StateMachine, PlayerAnimator);
+        AttackingState = new PlayerAttackingState(this, playerData, PlayerMovement, PlayerInput, StateMachine, PlayerAnimator);
+        DieState = new PlayerDieState(this, playerData, PlayerMovement, PlayerInput, StateMachine, PlayerAnimator);
     }
 
     public override void OnNetworkSpawn()

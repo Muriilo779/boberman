@@ -1,13 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Scripts.Player;
 using UnityEngine;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.Windows;
 
 public class PlayerIdleState : PlayerState
 {
-    public PlayerIdleState(PlayerManager player, PlayerMovement playerMovement, PlayerInputSystem playerInput, StateMachine<PlayerState> playerStateMachine, Animator playerAnimator)
-                          : base(player, playerMovement, playerInput, playerStateMachine, playerAnimator)
+    public PlayerIdleState(PlayerManager player, PlayerSO playerSO, PlayerMovement playerMovement, PlayerInputSystem playerInput, StateMachine<PlayerState> playerStateMachine, Animator playerAnimator)
+                          : base(player, playerSO, playerMovement, playerInput, playerStateMachine, playerAnimator)
     {
     }
 
@@ -20,16 +21,16 @@ public class PlayerIdleState : PlayerState
     {
         base.EnterState();
 
-        if (player.CurrentState == "PlayerWalkingStateUp")
+        if (player.CurrentState == "PlayerWalkUp")
             player.AnimationTriggerEvent("PlayerIdleUp");
 
-        else if (player.CurrentState == "PlayerWalkingStateDown")
+        else if (player.CurrentState == "PlayerWalkDown")
             player.AnimationTriggerEvent("PlayerIdleDown");
 
-        else if (player.CurrentState == "PlayerWalkingStateLeft")
+        else if (player.CurrentState == "PlayerWalkLeft")
             player.AnimationTriggerEvent("PlayerIdleLeft");
 
-        else if (player.CurrentState == "PlayerWalkingStateRight")
+        else if (player.CurrentState == "PlayerWalkRight")
             player.AnimationTriggerEvent("PlayerIdleRight");
     }
 

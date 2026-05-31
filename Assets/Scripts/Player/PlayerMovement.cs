@@ -5,8 +5,8 @@ using UnityEngine;
 public class PlayerMovement : NetworkBehaviour
 {
     [Header("Movement")]
-    [SerializeField] public float moveSpeed = 5f;
-    [SerializeField] public float maxMoveSpeed = 9f;
+    [SerializeField] public float moveSpeed;
+    [SerializeField] public float maxMoveSpeed;
     [SerializeField] private Rigidbody2D _rigidBody;
     [SerializeField] public PlayerInputSystem playerInput;
     [SerializeField] public Vector2 direction;

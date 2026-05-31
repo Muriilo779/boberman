@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Scripts.Player;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,7 +8,9 @@ using UnityEngine.InputSystem;
 public class PlayerWalkingState : PlayerState
 {
     private PlayerManager player;
-    public PlayerWalkingState(PlayerManager player, PlayerMovement playerMovement, PlayerInputSystem playerInput, StateMachine<PlayerState> playerStateMachine, Animator playerAnimator) : base(player, playerMovement, playerInput, playerStateMachine, playerAnimator)
+    public PlayerWalkingState(PlayerManager player, PlayerSO playerSO,PlayerMovement playerMovement,
+        PlayerInputSystem playerInput, StateMachine<PlayerState> playerStateMachine, Animator playerAnimator)
+        : base(player, playerSO, playerMovement, playerInput, playerStateMachine, playerAnimator)
     {
         this.player = player;
     }
@@ -41,16 +44,16 @@ public class PlayerWalkingState : PlayerState
 
 
         if (inputUp)
-            player.AnimationTriggerEvent("PlayerWalkingStateUp");
+            player.AnimationTriggerEvent("PlayerWalkUp");
 
         else if (inputDown)
-            player.AnimationTriggerEvent("PlayerWalkingStateDown");
+            player.AnimationTriggerEvent("PlayerWalkDown");
 
         else if (inputRight)
-            player.AnimationTriggerEvent("PlayerWalkingStateRight");
+            player.AnimationTriggerEvent("PlayerWalkRight");
 
         else if (inputLeft)
-            player.AnimationTriggerEvent("PlayerWalkingStateLeft");
+            player.AnimationTriggerEvent("PlayerWalkLeft");
 
     }
 

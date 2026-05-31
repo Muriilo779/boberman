@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Scripts.Player;
 using UnityEngine;
 
 public class PlayerState : IState
@@ -11,9 +12,11 @@ public class PlayerState : IState
     protected PlayerMovement playerMovement;
     protected Animator playerAnimator;
     protected string currentState;
+    protected PlayerSO playerSO;
 
-    public PlayerState(PlayerManager player, PlayerMovement playerMovement, PlayerInputSystem playerInput, StateMachine<PlayerState> playerStateMachine, Animator playerAnimator)
+    public PlayerState(PlayerManager player, PlayerSO playerSO, PlayerMovement playerMovement, PlayerInputSystem playerInput, StateMachine<PlayerState> playerStateMachine, Animator playerAnimator)
     {
+        this.playerSO = playerSO;
         this.player = player;
         this.playerStateMachine = playerStateMachine;
         this.playerMovement = playerMovement;

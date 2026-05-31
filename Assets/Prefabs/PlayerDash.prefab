@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7674369893708093925}
   - component: {fileID: 179662999426051225}
-  - component: {fileID: -5929866767903619944}
   - component: {fileID: 392778862230351129}
   - component: {fileID: 8434236588927068489}
   - component: {fileID: 8537359618410290985}
@@ -22,8 +21,9 @@ GameObject:
   - component: {fileID: -6647346281511208072}
   - component: {fileID: -8090500922633111413}
   - component: {fileID: 3766477041928277001}
+  - component: {fileID: 7408266968656693235}
   m_Layer: 0
-  m_Name: Player
+  m_Name: PlayerDash
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56,7 +56,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 493387398
+  GlobalObjectIdHash: 3607143023
   InScenePlacedSourceGlobalObjectIdHash: 493387398
   DeferredDespawnTick: 0
   Ownership: 1
@@ -69,20 +69,6 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
---- !u!114 &-5929866767903619944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8998316997674671113}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 770fdf95f9f527f4aa6bb6a8daaa92b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  playerBomb: {fileID: -3558616741636204773}
 --- !u!114 &392778862230351129
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,3 +376,17 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
+--- !u!114 &7408266968656693235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8998316997674671113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b64f53b6735335bf985054b1d0f7406c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.Characters.PlayerDash
+  ShowTopMostFoldoutHeaderGroup: 1
+  playerData: {fileID: 11400000, guid: 767d1e152277c275a856ecd30c077480, type: 2}

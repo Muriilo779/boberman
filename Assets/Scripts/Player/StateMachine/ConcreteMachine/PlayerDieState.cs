@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using Scripts.Player;
 using UnityEngine;
 
 public class PlayerDieState : PlayerState
 {
-    public PlayerDieState(PlayerManager player, PlayerMovement playerMovement, PlayerInputSystem playerInput, StateMachine<PlayerState> playerStateMachine, Animator playerAnimator)
-                          : base(player, playerMovement, playerInput, playerStateMachine, playerAnimator)
+    public PlayerDieState(PlayerManager player, PlayerSO playerSO, PlayerMovement playerMovement, PlayerInputSystem playerInput,
+        StateMachine<PlayerState> playerStateMachine, Animator playerAnimator)
+          : base(player, playerSO, playerMovement, playerInput, playerStateMachine, playerAnimator)
     {
     }
 
@@ -22,12 +24,11 @@ public class PlayerDieState : PlayerState
         player.AnimationTriggerEvent("PlayerDying");
 
         // Notify the server that this player is out
-        if (player.IsOwner)
+        if (!player.IsOwner)
+            return;
+        if (ManageRounds.Instance != null)
         {
-            if (ManageRounds.Instance != null)
-            {
-                ManageRounds.Instance.PlayerDiedServerRpc();
-            }
+            ManageRounds.Instance.PlayerDiedServerRpc();
         }
     }
 
