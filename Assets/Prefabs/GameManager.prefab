@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5213185757148802270}
   - component: {fileID: 7430105449732958237}
   - component: {fileID: 5221767922051902350}
+  - component: {fileID: 4424861104888112387}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -47,13 +48,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GlobalObjectIdHash: 3155110782
   InScenePlacedSourceGlobalObjectIdHash: 1523977643
+  DeferredDespawnTick: 0
+  Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
+  SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &5221767922051902350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66,7 +71,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f205c4d1cf598fc42b995ff6d0ba147b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _wallsParent: {fileID: 0}
+  ShowTopMostFoldoutHeaderGroup: 1
   _wall: {fileID: 1772989247244180738, guid: e1a36d32e329ea24d9b87de69e169df6, type: 3}
   _tileMap: {fileID: 0}
   _spawnTile: {fileID: 11400000, guid: 12183b9d42e53e24ebea4a829758739e, type: 2}
@@ -80,9 +85,22 @@ MonoBehaviour:
   origin: {x: 0, y: 0, z: 0}
   _bricksPercentage: 0.791
   _powerUpPercentage: 0.522
-  _isUsableParent: {fileID: 0}
-  _hasWallParent: {fileID: 0}
-  _hasBombParent: {fileID: 0}
   _speedPw: {fileID: 11400000, guid: 22f384987299d49489b981bf57781100, type: 2}
   _blastPw: {fileID: 11400000, guid: 587849dc67994f446b634c4e25b0c102, type: 2}
   _bombPw: {fileID: 11400000, guid: 44d4aa547b3b3084b845b83f3ddabfba, type: 2}
+--- !u!114 &4424861104888112387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5566182743916336690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 14577ea8aa7b29ed08de2f7c02362250, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ManageRounds
+  ShowTopMostFoldoutHeaderGroup: 1
+  _playerPrefab:
+  - {fileID: 8998316997674671113, guid: 17df7299b27485926a2e35e67c3a8885, type: 3}
+  - {fileID: 8998316997674671113, guid: 0ef0d8ace931cff45923bd44a49e5175, type: 3}

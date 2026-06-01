@@ -287,6 +287,23 @@ namespace Netcode.Transports.Facepunch
                 Debug.Log($"[{nameof(FacepunchTransport)}] - Fetched user Steam ID.");
         }
 
+        public bool TryGetSteamId(ulong clientId, out SteamId steamId)
+        {
+            if (clientId == ServerClientId)
+            {
+                steamId = SteamClient.SteamId;
+                return true;
+            }
+
+            if (connectedClients.TryGetValue(clientId, out var client))
+            {
+                steamId = client.steamId;
+                return true;
+            }
+
+            steamId = default;
+            return false;
+        }
         #endregion
     }
 }

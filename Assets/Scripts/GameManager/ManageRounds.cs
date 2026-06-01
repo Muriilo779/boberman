@@ -16,7 +16,7 @@ public class ManageRounds : NetworkBehaviour
     public event Action OnGameOver;
     public int Round { get; private set; }
     public int MaxRounds { get; private set; }
-    [SerializeField] private GameObject _playerPrefab;
+    [SerializeField] private List<GameObject> _playerPrefab;
 
     private void Awake()
     {
@@ -28,7 +28,6 @@ public class ManageRounds : NetworkBehaviour
         Instance = this;
         Round = 1;
         MaxRounds = 3;
-        DontDestroyOnLoad(gameObject);
     }
     
     #region Starting the Game 
@@ -49,12 +48,10 @@ public class ManageRounds : NetworkBehaviour
             return;
         }
         
-
         if (NetworkManager.Singleton.IsListening)
         {
             Debug.Log("NetworkManager already running. Marking as initialised.");
             _alreadyInitialised = true;
-            return;
         }
 
         if (SteamLobby.Instance != null && SteamLobby.currentLobby.Id.Value != 0)
@@ -98,43 +95,39 @@ public class ManageRounds : NetworkBehaviour
         
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnected;
-        NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += OnSceneLoaded;
 
         
         Debug.Log($"Starting game. Numbers of players active: {_playersAliveIds.Count}");
         ManageDrops.Instance.CreateInfo();
         ManageDrops.Instance.CreateTiles();
         ManageDrops.Instance.CreateWalls();
+        
+        foreach(var client in NetworkManager.Singleton.ConnectedClientsList)
+            SpawnPlayer(client.ClientId);
     }
 
-    private void OnSceneLoaded(string sceneName, LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+    private void SpawnPlayer(ulong clientId)
     {
-        if (sceneName != "Main" || !IsServer)
-            return;
-
         Debug.Log("Main scene loaded. Initializing players and map for the round.");
-        
-        _alreadyInitialised = true;
-        _playersAliveIds.Clear();
-        
-        foreach(var clientId in clientsCompleted)
-        {
-            _playersAliveIds.Add(clientId);
 
-            if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
+        _alreadyInitialised = true;
+        var transport = NetworkManager.Singleton.GetComponent<FacepunchTransport>();
+        _playersAliveIds.Add(clientId);
+
+        if (transport.TryGetSteamId(clientId, out var steamId) &&
+            NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out var client))
+        {
+            var characterId = SteamLobby.currentLobby.GetData("character_" + steamId);
+            if (client.PlayerObject == null)
             {
-                // If the player object already exists, we don't spawn a new one.
-                // This prevents the "double player" issue.
-                if (client.PlayerObject == null)
-                {
-                    Debug.Log($"Spawning player object for client {clientId}");
-                    var playerSpawn = Instantiate(_playerPrefab);
-                    playerSpawn.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
-                }
+                Debug.Log($"Spawning player object for client {clientId}");
+                GameObject playerSpawn;
+                if (int.TryParse(characterId, out var charId))
+                    playerSpawn = Instantiate(_playerPrefab[charId % _playerPrefab.Count]);
                 else
-                {
-                    Debug.Log($"Player object already exists for client {clientId}. Skipping manual spawn.");
-                }
+                    playerSpawn = Instantiate(_playerPrefab[0]);
+                
+                playerSpawn.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
             }
         }
     }
@@ -147,7 +140,7 @@ public class ManageRounds : NetworkBehaviour
 
     private void OnClientDisconnected(ulong clientId)
     {
-        if (_playersAliveIds.Add(clientId))
+        if (_playersAliveIds.Remove(clientId))
         {
             Debug.Log($"Player {clientId} disconnected. Total alive: {_playersAliveIds.Count}");
             CheckWinCondition();
@@ -160,7 +153,6 @@ public class ManageRounds : NetworkBehaviour
         {
             NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
             NetworkManager.Singleton.OnClientDisconnectCallback -= OnClientDisconnected;
-            NetworkManager.Singleton.SceneManager.OnLoadEventCompleted -= OnSceneLoaded;
         }
     }
     #endregion 

@@ -8,6 +8,7 @@ using UnityEngine.Events;
 using System.Threading.Tasks;
 using Netcode.Transports.Facepunch;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
@@ -61,7 +62,7 @@ public class SteamLobby : MonoBehaviour
             if (SceneManager.GetActiveScene().name != "Main")
             {
                 Debug.Log("Starting game: Loading Main scene.");
-                SceneManager.LoadScene("Main");
+                NetworkManager.Singleton.SceneManager.LoadScene("Main", LoadSceneMode.Single);
             }
         }
     }
