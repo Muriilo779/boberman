@@ -16,7 +16,8 @@ public abstract class PlayerManager : NetworkBehaviour, IDamageable
     public PlayerMovement PlayerMovement { get; protected set; }
     public PlayerInputSystem PlayerInput { get; protected set; }
     public PlayerBomb PlayerBomb { get; protected set; }
-
+    public PlayerHUD PlayerHUD { get; protected set; }
+    
     public StateMachine<PlayerState> StateMachine { get; protected set; }
     public PlayerIdleState IdleState { get; protected set; }
     public PlayerWalkingState WalkingState { get; protected set; }
@@ -40,6 +41,7 @@ public abstract class PlayerManager : NetworkBehaviour, IDamageable
         PlayerMovement = GetComponent<PlayerMovement>();
         PlayerInput = GetComponent<PlayerInputSystem>();
         PlayerBomb = GetComponent<PlayerBomb>();
+        PlayerHUD = GetComponent<PlayerHUD>();
         StateMachine = new StateMachine<PlayerState>();
 
         PlayerMovement.maxMoveSpeed = playerData.maxMoveSpeed;

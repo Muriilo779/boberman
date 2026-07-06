@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: -6647346281511208072}
   - component: {fileID: -8090500922633111413}
   - component: {fileID: 3766477041928277001}
+  - component: {fileID: 2085274946533762123}
   m_Layer: 0
   m_Name: PlayerHook
   m_TagString: Player
@@ -56,7 +57,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 306048369
+  GlobalObjectIdHash: 1283461419
   InScenePlacedSourceGlobalObjectIdHash: 493387398
   DeferredDespawnTick: 0
   Ownership: 1
@@ -390,3 +391,18 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
+--- !u!114 &2085274946533762123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8998316997674671113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8355bb7beb8a4fd6bca6aacc1d179525, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scripts.Player.PlayerHUD
+  ShowTopMostFoldoutHeaderGroup: 1
+  _playerManager: {fileID: 3321622936250205177}
+  isMoonwalkingText: {fileID: 0}
