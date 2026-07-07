@@ -47,24 +47,24 @@ public class PlayerBomb : NetworkBehaviour
     [Rpc(SendTo.Server)]
     private void CanPlaceBombServerRpc(bool hasPressedAttack, Vector2 position)
     {
-        var (x, y) = Utilities.Convert.PositionToGrid(position, _manageDrops.origin);
-
-        var hasBomb = _manageDrops.CheckBombs(x, y);
+        var gridPos = _manageDrops.WorldToGridIndex(position);
+        var hasBomb = _manageDrops.CheckBombs(gridPos.x, gridPos.y);
 
         if (_bombsRemaining.Value > 0 && hasPressedAttack && !hasBomb)
-            SpawnBombServerRpc(position, x, y);
+            SpawnBombServerRpc(position, gridPos);
     }
 
     [Rpc(SendTo.Server)]
-    private void SpawnBombServerRpc(Vector2 position, int x, int y)
+    private void SpawnBombServerRpc(Vector2 position, Vector2Int gridPos)
     {
-        var bomb = Instantiate(_bombPrefab, position, Quaternion.identity);
+        var worldPos = _manageDrops.GetCellCenterWorld(position);
+        var bomb = Instantiate(_bombPrefab, worldPos, Quaternion.identity);
         bomb.GetComponent<NetworkObject>().Spawn(true);
-        bomb.GetComponent<BombControl>().Initialize(_explosionRadius.Value, this, position);
+        bomb.GetComponent<BombControl>().Initialize(_explosionRadius.Value, this, worldPos, gridPos);
 
         _bombsRemaining.Value--;
 
-        _manageDrops.UpdateGridBomb(true, x, y);
+        _manageDrops.UpdateGridBomb(true, gridPos.x, gridPos.y);
     }
 
     #endregion

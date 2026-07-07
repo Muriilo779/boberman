@@ -12,17 +12,19 @@ public class BombControl : NetworkBehaviour
 
     [SerializeField] private int _explosionRadius;
     [SerializeField] private float _bombFuseTime = 3f;
-    [SerializeField] private Vector2 _initialPos;
+    [SerializeField] private Vector3 _worldPos;
+    [SerializeField] private Vector2Int _gridPos;
     private void Awake()
     {
         _manageDrops = ManageDrops.Instance;
     }
 
-    public void Initialize(int explosionRadius, PlayerBomb playerBomb, Vector2 position)
+    public void Initialize(int explosionRadius, PlayerBomb playerBomb, Vector3 worldPos, Vector2Int gridPos)
     {
         _explosionRadius = explosionRadius;
         _playerBomb = playerBomb;
-        _initialPos = position;
+        _worldPos = worldPos;
+        _gridPos = gridPos;
     }
 
     private void Update()
@@ -40,13 +42,13 @@ public class BombControl : NetworkBehaviour
     [Rpc(SendTo.Server)]
     private void StartExplosionServerRpc()
     {
-        var explosion = Instantiate(_explosionStartPrefab, transform.position, Quaternion.identity);
+        var explosion = Instantiate(_explosionStartPrefab, _worldPos, Quaternion.identity);
         explosion.GetComponent<NetworkObject>().Spawn(true);
 
-        ExplodeServerRpc(transform.position, Vector2.up, _explosionRadius);
-        ExplodeServerRpc(transform.position, Vector2.down, _explosionRadius);
-        ExplodeServerRpc(transform.position, Vector2.left, _explosionRadius);
-        ExplodeServerRpc(transform.position, Vector2.right, _explosionRadius);
+        ExplodeServerRpc(_worldPos, Vector2.up, _explosionRadius);
+        ExplodeServerRpc(_worldPos, Vector2.down, _explosionRadius);
+        ExplodeServerRpc(_worldPos, Vector2.left, _explosionRadius);
+        ExplodeServerRpc(_worldPos, Vector2.right, _explosionRadius);
     }
 
     [Rpc(SendTo.Server)]
@@ -57,14 +59,14 @@ public class BombControl : NetworkBehaviour
 
         position += direction;
 
-        var (x, y) = Utilities.Convert.PositionToGrid(position, _manageDrops.origin);
+        var pos = _manageDrops.WorldToGridIndex(new Vector3(position.x, position.y, _worldPos.z));
 
-        if (_manageDrops.CheckForUsableTiles(x, y))
+        if (_manageDrops.CheckForUsableTiles(pos.x, pos.y))
             return;
 
-        if (_manageDrops.CheckForWalls(x, y)) 
+        if (_manageDrops.CheckForWalls(pos.x, pos.y)) 
         {
-            _manageDrops.RemoveWalls(position);
+            _manageDrops.RemoveWall(position);
             return;
         }
 
@@ -81,9 +83,7 @@ public class BombControl : NetworkBehaviour
     [Rpc(SendTo.Server)]
     private void DestroyBombServerRpc()
     {
-        var (x, y) = Utilities.Convert.PositionToGrid(transform.position, _manageDrops.origin);
-
-        _manageDrops.UpdateGridBomb(false, x, y);
+        _manageDrops.UpdateGridBomb(false, _gridPos.x, _gridPos.y);
 
         _playerBomb.GetBombServerRpc();
         GetComponent<NetworkObject>().Despawn();

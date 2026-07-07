@@ -17,6 +17,7 @@ public class ManageRounds : NetworkBehaviour
     public int Round { get; private set; }
     public int MaxRounds { get; private set; }
     [SerializeField] private List<GameObject> _playerPrefab;
+    [SerializeField] private ManageDrops _manageDrops;
 
     private void Awake()
     {
@@ -198,10 +199,24 @@ public class ManageRounds : NetworkBehaviour
         if(Round <= MaxRounds)
         {
             Round++;
-            NetworkManager.SceneManager.LoadScene("Main", LoadSceneMode.Single);
+            StartCoroutine(RestartRound());
         }
         else
             NetworkManager.SceneManager.LoadScene("Lobby", LoadSceneMode.Single);
     }
+
+    private IEnumerator RestartRound()
+    {   
+        _manageDrops.RemoveWalls();  
+        yield return new WaitForSeconds(3f);
+        _manageDrops.CreateWalls();
+
+        foreach (var client in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            SpawnPlayer(client.ClientId);
+            _playersAliveIds.Add(client.ClientId);
+        }
+    }
+
     #endregion
 }
