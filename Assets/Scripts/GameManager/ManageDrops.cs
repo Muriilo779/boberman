@@ -19,7 +19,7 @@ public class ManageDrops : NetworkBehaviour
     [Header("Grid")]
     private Grid<BackgroundTile> _walls;
     private GridStruct _bombs; 
-    [SerializeField] private Vector3Int _size;
+    public Vector3Int Size { get; private set; }
     public Vector3Int origin;
 
     [Header("Game Variables")]
@@ -42,11 +42,11 @@ public class ManageDrops : NetworkBehaviour
     {
         //Maybe revert this to a normal grid class?
         _tileMap = GameObject.FindWithTag("Grid").GetComponentInChildren<Tilemap>();
-        _size = _tileMap.size;
+        Size = _tileMap.size;
         origin = _tileMap.origin;
         
-        _bombs = new GridStruct(_size.x, _size.y); 
-        _walls = new Grid<BackgroundTile>(_size.x, _size.y);
+        _bombs = new GridStruct(Size.x, Size.y); 
+        _walls = new Grid<BackgroundTile>(Size.x, Size.y);
     }
     
     #region Walls
@@ -55,17 +55,18 @@ public class ManageDrops : NetworkBehaviour
         if (!IsServer)
             return;
         
-        for (var i = 0; i < _size.x - 1; i++)
-            for (var j = 0; j < _size.y; j++)
+        for (var i = 0; i < Size.x - 1; i++)
+            for (var j = 0; j < Size.y; j++)
             {
                 var wallChances = Random.Range(0f, 1f);
                 var powerUpChances = Random.Range(0f, 1f);
 
-                var pos = new Vector3Int(i + origin.x, j + origin.y, origin.z);
+                var cellPos = new Vector3Int(i + origin.x, j + origin.y, origin.z);
 
-                if (CanCreateWall(i, j, pos, wallChances))
+                if (CanCreateWall(i, j, cellPos, wallChances))
                 {
-                    Transform wallInstance = Instantiate(_wall, pos, Quaternion.identity);
+                    var worldPos = _tileMap.GetCellCenterWorld(cellPos);
+                    Transform wallInstance = Instantiate(_wall, worldPos, Quaternion.identity);
                     wallInstance.name = "wall";
                     UpdateGridWall(true, wallInstance.gameObject, i, j);
                     _walls.gridArray[i, j].Item = GetPowerUp(powerUpChances);
@@ -74,21 +75,40 @@ public class ManageDrops : NetworkBehaviour
             }
     }
 
-    public void RemoveWalls(Vector2 pos)
+    public void RemoveWalls()
     {
         if (!IsServer)
             return;
 
-        var x = (int)pos.x - origin.x;
-        var y = (int)pos.y - origin.y;
+        for (var i = 0; i < Size.x-1; i++)
+        {
+            for (int j = 0; j < Size.y; j++)
+            {
+                var wall = _walls.gridArray[i, j].Wall;
 
-        var wall = _walls.gridArray[x, y].Wall;
-        var item = _walls.gridArray[x, y].Item;
+                if (wall == null)
+                    continue;
+                
+                //Activating the animation before the wall destroy
+                wall.GetComponent<NetworkObject>().Despawn(true);
+                UpdateGridWall(false, null, i, j);
+            }
+        }
+    }
+    public void RemoveWall(Vector2 pos)
+    {
+        if (!IsServer)
+            return;
+
+        var gridPos = WorldToGridIndex(pos);
+        
+        var wall = _walls.gridArray[gridPos.x, gridPos.y].Wall;
+        var item = _walls.gridArray[gridPos.x, gridPos.y].Item;
 
         //Activating the animation before the wall destroy
         wall.GetComponent<Animator>().SetBool("Destroy", true);
 
-        UpdateGridWall(false, null, x, y);
+        UpdateGridWall(false, null, gridPos.x, gridPos.y);
 
         if (item == null)
             return;
@@ -126,8 +146,8 @@ public class ManageDrops : NetworkBehaviour
             return;
 
         //Create the tiles for all the grid, and set the isUsable variable to be true or false
-        for (var i = 0; i < _size.x - 1; i++)
-            for (var j = 0; j < _size.y; j++)
+        for (var i = 0; i < Size.x - 1; i++)
+            for (var j = 0; j < Size.y; j++)
             {
                 var pos = new Vector3Int(i + origin.x, j + origin.y, origin.z);
                 _walls.gridArray[i, j] = new BackgroundTile(UsableTile(pos), false, null, null, pos.x, pos.y);
@@ -151,6 +171,18 @@ public class ManageDrops : NetworkBehaviour
             return false;
 
         return _ground.Any(t => tile == t);
+    }
+
+    public Vector3 GetCellCenterWorld(Vector3 worldPos)
+    {
+        Vector3Int cellPosition = _tileMap.WorldToCell(worldPos);
+        return _tileMap.GetCellCenterWorld(cellPosition);
+    }
+
+    public Vector2Int WorldToGridIndex(Vector3 worldPos)
+    {
+        Vector3Int cellPosition = _tileMap.WorldToCell(worldPos);
+        return new Vector2Int(cellPosition.x - origin.x, cellPosition.y - origin.y);
     }
     #endregion
 
